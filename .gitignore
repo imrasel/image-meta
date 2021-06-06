@@ -2,6 +2,7 @@
 /frontend/node_modules
 /frontend/dist
 /backend/public/hot
+/backend/public/images
 /backend/public/storage
 /backend/storage/*.key
 /backend/vendor
