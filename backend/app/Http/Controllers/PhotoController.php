@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Photo;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
@@ -79,11 +80,12 @@ class PhotoController extends Controller
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $data = exif_read_data($image);
+            $data = @exif_read_data($image);
             $imageName = time() . '.' . $image->extension();  
             $image->move(public_path($imageFolder), $imageName);
             
         } else {
+            return 
             $url = $request->url;
             $image = @file_get_contents($url);
             if (!$image) {
@@ -93,7 +95,7 @@ class PhotoController extends Controller
                 ]);
             }
 
-            $data = exif_read_data($url);
+            $data = @exif_read_data($url);
             $imageName = time() . '.' . pathinfo($url)['extension'];
             file_put_contents(public_path($imageFolder . '/' . $imageName), $image);
         }
@@ -104,23 +106,26 @@ class PhotoController extends Controller
         $camera = [];
         $copyrights = [];
 
+
         //TODO: refactor
-        foreach ($data as $key => $item) {
-            if (strpos($key, 'Undefined') !== false) {
-                continue;
+        if ($data) {
+            foreach ($data as $key => $item) {
+                if (strpos($key, 'Undefined') !== false) {
+                    continue;
+                }
+                if (in_array($key, Photo::EXCEPT_KEYS)) {
+                    continue;
+                }
+                if (in_array($key, Photo::CAMERA_KEYS)) {
+                    $camera[$key] = $item;
+                    continue;
+                }
+                if (in_array($key, Photo::COPYRIGHT_KEYS)) {
+                    $copyrights[$key] = $item;
+                    continue;
+                }
+                $exifs[$key] = $item;
             }
-            if (in_array($key, Photo::EXCEPT_KEYS)) {
-                continue;
-            }
-            if (in_array($key, Photo::CAMERA_KEYS)) {
-                $camera[$key] = $item;
-                continue;
-            }
-            if (in_array($key, Photo::COPYRIGHT_KEYS)) {
-                $copyrights[$key] = $item;
-                continue;
-            }
-            $exifs[$key] = $item;
         }
 
         $photo = Photo::create([
