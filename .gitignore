@@ -1,6 +1,7 @@
 .DS_Store
 /frontend/node_modules
 /frontend/dist
+/frontend/dist.zip
 /backend/public/hot
 /backend/public/images
 /backend/public/storage

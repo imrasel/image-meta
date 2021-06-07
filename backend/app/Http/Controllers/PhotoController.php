@@ -25,25 +25,47 @@ class PhotoController extends Controller
             'photos' => $photos 
         ]);
     }
-    public function download($filename)
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
     {
-        $file= public_path() . "/images/" . $filename;
+        $photo = Photo::findOrFail($id);
 
-        $headers = array(
-        'Content-Type: application/image',
-        );
-
-        return Response::download($file, $filename, $headers);
+        return response()->json([
+            'success' => true,
+            'photo' => $photo
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Download a given imagee filename.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function download($filename)
     {
-        //
+
+        $file = public_path() . "/images/" . $filename;
+
+        if (!file_exists($file)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Image not found'
+            ]);
+        }
+
+        
+
+        $headers = array(
+            'Content-Type: application/image',
+        );
+
+        return Response::download($file, $filename, $headers);
     }
 
     /**
@@ -122,48 +144,4 @@ class PhotoController extends Controller
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }
