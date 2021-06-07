@@ -85,7 +85,6 @@ class PhotoController extends Controller
             $image->move(public_path($imageFolder), $imageName);
             
         } else {
-            return 
             $url = $request->url;
             $image = @file_get_contents($url);
             if (!$image) {
