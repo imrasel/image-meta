@@ -36,7 +36,7 @@ import http from '../utils/axiosConfig';
 import ModalPhoto from '../components/ModalPhoto';
 
 export default {
-  name: 'App',
+  name: 'ImageUpload',
   components: {
     ModalPhoto
   },
@@ -84,9 +84,6 @@ export default {
         });
     }
   },
-  mounted() {
-    // this.storePhoto();
-  }
 }
 </script>
 

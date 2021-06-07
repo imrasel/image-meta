@@ -1,8 +1,6 @@
 <template>
   <div>
-
     <div class="container">
-
       <div v-if="isLoading" class="loading">
         <div class="spinner-border text-primary" role="status">
           <span class="sr-only"></span>
@@ -23,18 +21,18 @@
         </div>
       </div>
 
-      <div>
+      <div v-if="links.length > 3">
         <nav aria-label="Page navigation" class="pages">
           <ul class="pagination pagination-dark">
             <li v-for="(link, index) in links" :key="index" class="page-item" :class="link.active ? 'active' : ''">
               <button @click.prevent="getPhotos(link.url)" class="page-link" ><span v-html="link.label">{{ link.label }}</span></button>
             </li>
           </ul>
-      </nav>
+        </nav>
       </div>
     </div>
 
-  <modal-photo :photo="selectedPhoto"></modal-photo>
+    <modal-photo :photo="selectedPhoto"></modal-photo>
   </div>
 </template>
 
@@ -43,15 +41,13 @@ import http from '../utils/axiosConfig';
 import ModalPhoto from '../components/ModalPhoto';
 
 export default {
-  name: 'App',
+  name: 'Images',
   components: {
     ModalPhoto
   },
   data() {
     return {
       isLoading: false,
-      image: '',
-      url: '',
       query: '',
       photos: [],
       selectedPhoto: {},
@@ -61,7 +57,6 @@ export default {
 
   methods: {
     downloadItem (url) {
-      console.log(url);
       let filename = url.split('images/')[1];
       http.get('download/' + filename, { responseType: 'blob' })
         .then(response => {
@@ -77,13 +72,7 @@ export default {
       this.selectedPhoto = photo;
       this.$bvModal.show('modal-image');
     },
-    onFileSelect(e) {
-      this.image = e.target.files[0];
-    },
     getPhotos(url) {
-      // console.log(url);
-      // console.log(url ? url.split('?')[1]: []);
-      // console.log(url.length);
       let param = '';
       if (url) {
         param = url ? url.split('?')[1] : '';
@@ -97,7 +86,6 @@ export default {
           if (response.data.success) {
             this.photos = response.data.photos.data;
             this.links = response.data.photos.links;
-            // this.$bvModal.show('modal-image');
           } else if (!response.data.success) {
             alert(response.data.error)
           } else {
@@ -112,7 +100,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.$route)
     this.query = this.$route.query.page ? this.$route.fullPath : '';
     this.getPhotos(this.query);
   }

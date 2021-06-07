@@ -49,7 +49,6 @@ class PhotoController extends Controller
      */
     public function download($filename)
     {
-
         $file = public_path() . "/images/" . $filename;
 
         if (!file_exists($file)) {
@@ -58,8 +57,6 @@ class PhotoController extends Controller
                 'message' => 'Image not found'
             ]);
         }
-
-        
 
         $headers = array(
             'Content-Type: application/image',
@@ -110,22 +107,20 @@ class PhotoController extends Controller
         //TODO: refactor
         foreach ($data as $key => $item) {
             if (strpos($key, 'Undefined') !== false) {
-                
-            } else {
-                if (in_array($key, Photo::EXCEPT_KEYS)) {
-                    continue;
-                }
-                if (in_array($key, Photo::CAMERA_KEYS)) {
-                    $camera[$key] = $item;
-                    continue;
-                }
-                if (in_array($key, Photo::COPYRIGHT_KEYS)) {
-                    $copyrights[$key] = $item;
-                    continue;
-                }
-                $exifs[$key] = $item;
+                continue;
             }
-            
+            if (in_array($key, Photo::EXCEPT_KEYS)) {
+                continue;
+            }
+            if (in_array($key, Photo::CAMERA_KEYS)) {
+                $camera[$key] = $item;
+                continue;
+            }
+            if (in_array($key, Photo::COPYRIGHT_KEYS)) {
+                $copyrights[$key] = $item;
+                continue;
+            }
+            $exifs[$key] = $item;
         }
 
         $photo = Photo::create([
@@ -134,9 +129,7 @@ class PhotoController extends Controller
             'copyrights' => json_encode($copyrights),
             'exifs' => json_encode($exifs),
         ]);
-        
 
-        Log::info("message", ['data' => $data]);
         return response()->json([
             'success' => true,
             'photo' => $photo 
